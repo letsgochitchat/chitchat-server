@@ -1,0 +1,23 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME}?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&tinyInt1isBit=false&rewriteBatchedStatements=true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: ${SHOW_SQL:true}
+        format_sql: true
+        jdbc:
+          batch_size: 150
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
