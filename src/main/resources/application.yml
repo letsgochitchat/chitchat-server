@@ -20,4 +20,3 @@ spring:
         jdbc:
           batch_size: 150
     open-in-view: false
-    database-platform: org.hibernate.dialect.MySQL8Dialect
