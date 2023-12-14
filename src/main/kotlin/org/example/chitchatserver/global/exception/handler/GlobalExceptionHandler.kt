@@ -16,6 +16,7 @@ import org.springframework.http.codec.ServerCodecConfigurer
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.support.WebExchangeBindException
 import org.springframework.web.reactive.function.server.*
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebInputException
 import reactor.core.publisher.Mono
 
@@ -48,6 +49,7 @@ class GlobalExceptionHandler(
             is CustomException -> exception.toErrorResponse()
             is WebExchangeBindException -> exception.toFieldErrorResponse()
             is ServerWebInputException -> BadRequestException(exception.message).toErrorResponse()
+            is ResponseStatusException -> BadRequestException("Handler Not Found: ${request.method()} ${request.path()}").toErrorResponse()
             else -> {
                 logger.error(exception.message, exception)
                 InternalServerError.toErrorResponse()
