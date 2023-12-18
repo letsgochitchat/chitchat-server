@@ -23,7 +23,6 @@ class SecurityConfig(
     protected fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain =
         http {
             authorizeExchange {
-                authorize("/test", permitAll)
                 authorize(anyExchange, denyAll)
             }
             formLogin { disable() }
