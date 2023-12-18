@@ -4,7 +4,7 @@ import org.example.chitchatserver.domain.user.persistence.Authority
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import java.util.*
+import java.util.UUID
 
 class CustomUserDetail(
     private val userId: UUID,

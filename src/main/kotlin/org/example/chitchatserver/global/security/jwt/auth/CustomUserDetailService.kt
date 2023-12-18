@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
-import java.util.*
+import java.util.UUID
 
 @Component
 class CustomUserDetailService(
