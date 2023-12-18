@@ -5,7 +5,7 @@ import org.example.chitchatserver.common.exception.CustomException
 import org.example.chitchatserver.global.exception.BindErrorResponse
 import org.example.chitchatserver.global.exception.ErrorResponse
 import org.example.chitchatserver.global.exception.InternalServerError
-import org.example.chitchatserver.global.exception.ResponseStatus.BAD_REQUEST
+import org.example.chitchatserver.common.exception.ResponseStatus.BAD_REQUEST
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.web.WebProperties
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler
