@@ -4,19 +4,16 @@ server:
 
 
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  r2dbc:
+    host: ${DB_HOST:localhost}
+    port: ${DB_PORT:5432}
+    user: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    username: ${DB_USERNAME}
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME}?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&tinyInt1isBit=false&rewriteBatchedStatements=true
+    database: ${DB_NAME}
 
-  jpa:
-    hibernate:
-      ddl-auto: ${DDL_AUTO:validate}
-    properties:
-      hibernate:
-        show_sql: ${SHOW_SQL:true}
-        format_sql: true
-        jdbc:
-          batch_size: 150
-    open-in-view: false
+jwt:
+  header: Authorization
+  prefix: Bearer
+  access-exp: ${ACCESS_TOKEN_EXP}
+  refresh-exp: ${REFRESH_TOKEN_EXP}
+  secret: ${TOKEN_SECRET}

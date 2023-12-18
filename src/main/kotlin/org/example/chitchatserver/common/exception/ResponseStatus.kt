@@ -1,4 +1,4 @@
-package org.example.chitchatserver.global.exception
+package org.example.chitchatserver.common.exception
 
 object ResponseStatus {
     const val BAD_REQUEST = 400
