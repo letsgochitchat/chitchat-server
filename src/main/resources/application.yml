@@ -10,6 +10,11 @@ spring:
     user: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     database: ${DB_NAME}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
 
 jwt:
   header: Authorization
