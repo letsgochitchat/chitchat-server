@@ -25,6 +25,7 @@ dependencies {
     implementation("org.postgresql:r2dbc-postgresql:1.0.3.RELEASE")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc:3.2.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive:3.2.0")
     implementation ("org.springframework.boot:spring-boot-starter-validation")
     implementation("mysql:mysql-connector-java:8.0.28")
     implementation("com.querydsl:querydsl-jpa:5.0.0")
