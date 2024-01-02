@@ -23,6 +23,8 @@ class SecurityConfig(
     protected fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain =
         http {
             authorizeExchange {
+                authorize("/auth/oauth/google", permitAll)
+                authorize("/auth/google", permitAll)
                 authorize(anyExchange, denyAll)
             }
             formLogin { disable() }
