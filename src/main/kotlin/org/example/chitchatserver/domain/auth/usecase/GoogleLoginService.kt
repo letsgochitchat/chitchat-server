@@ -33,11 +33,12 @@ class GoogleLoginService(
                             authType = AuthType.GOOGLE,
                             sub = it.sub,
                             authority = Authority.USER,
+                            isNewUser = true
                         )
                     )
                 )
         }
         .flatMap {
-            jwtTokenGenerator.generateTokens(it.id, it.authority)
+            jwtTokenGenerator.generateTokens(it.id, it.authority, it.isNewUser)
         }
 }
