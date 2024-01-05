@@ -6,7 +6,6 @@ import org.example.chitchatserver.common.exception.UnauthorizedException
 import org.example.chitchatserver.global.exception.InternalServerError
 import org.example.chitchatserver.thirdparty.webclient.google.dto.OauthTokenResponse
 import org.example.chitchatserver.thirdparty.webclient.google.dto.UserInfoResponse
-import org.example.chitchatserver.thirdparty.webclient.throwOnError
 import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -71,19 +70,20 @@ class GoogleWebClient(
         .throwOnError(UnauthorizedException("Invalid Token"))
         .bodyToMono(UserInfoResponse::class.java)
 
-    fun revokeAccessToken(accessToken: String): Mono<Void> = webClient
-        .mutate()
-        .baseUrl(OAUTH2_BASE_URL)
-        .build()
-        .post()
-        .uri {
-            it.path("/revoke")
-                .queryParam(TOKEN, accessToken)
-                .build()
-        }
-        .retrieve()
-        .throwOnError(BadRequestException("Invalid Token"))
-        .bodyToMono(Void::class.java)
+    fun revokeAccessToken(accessToken: String) {
+        webClient
+            .mutate()
+            .baseUrl(OAUTH2_BASE_URL)
+            .build()
+            .post()
+            .uri {
+                it.path("/revoke")
+                    .queryParam(TOKEN, accessToken)
+                    .build()
+            }
+            .retrieve()
+            .throwOnError(BadRequestException("Invalid Token"))
+    }
 }
 
 fun WebClient.ResponseSpec.throwOnError(vararg exception: CustomException) =
