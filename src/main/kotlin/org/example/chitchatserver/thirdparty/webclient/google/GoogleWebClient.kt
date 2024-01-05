@@ -1,6 +1,7 @@
 package org.example.chitchatserver.thirdparty.webclient.google
 
 import org.example.chitchatserver.common.exception.BadRequestException
+import org.example.chitchatserver.common.exception.UnauthorizedException
 import org.example.chitchatserver.thirdparty.webclient.google.dto.OauthTokenResponse
 import org.example.chitchatserver.thirdparty.webclient.google.dto.UserInfoResponse
 import org.example.chitchatserver.thirdparty.webclient.throwError
@@ -62,7 +63,7 @@ class GoogleWebClient(
                 .build()
         }
         .retrieve()
-        .throwError(BadRequestException("Code Already Used Or Invalid Code"))
+        .throwError(UnauthorizedException("Invalid Token"))
         .bodyToMono(UserInfoResponse::class.java)
 
     fun revokeAccessToken(accessToken: String): Mono<Void> = webClient
