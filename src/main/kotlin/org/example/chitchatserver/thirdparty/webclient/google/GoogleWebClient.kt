@@ -24,6 +24,8 @@ class GoogleWebClient(
         private const val ALT = "alt"
         private const val ACCESS_TOKEN = "access_token"
         private const val TOKEN = "token"
+        private const val OAUTH2_BASE_URL = "https://oauth2.googleapis.com"
+        private const val GOOGLE_API_BASE_URL = "https://www.googleapis.com"
     }
 
     fun getGoogleAuthUrl() =
@@ -35,7 +37,7 @@ class GoogleWebClient(
 
     fun getGoogleAccessToken(code: String): Mono<OauthTokenResponse> = webClient
         .mutate()
-        .baseUrl("https://oauth2.googleapis.com")
+        .baseUrl(OAUTH2_BASE_URL)
         .build()
         .post()
         .uri {
@@ -53,7 +55,7 @@ class GoogleWebClient(
 
     fun getUserInfo(tokens: OauthTokenResponse): Mono<UserInfoResponse> = webClient
         .mutate()
-        .baseUrl("https://www.googleapis.com")
+        .baseUrl(GOOGLE_API_BASE_URL)
         .build()
         .get()
         .uri {
@@ -68,7 +70,7 @@ class GoogleWebClient(
 
     fun revokeAccessToken(accessToken: String): Mono<Void> = webClient
         .mutate()
-        .baseUrl("https://oauth2.googleapis.com")
+        .baseUrl(OAUTH2_BASE_URL)
         .build()
         .post()
         .uri {
