@@ -1,10 +1,13 @@
 package org.example.chitchatserver.thirdparty.webclient.google
 
 import org.example.chitchatserver.common.exception.BadRequestException
+import org.example.chitchatserver.common.exception.CustomException
 import org.example.chitchatserver.common.exception.UnauthorizedException
+import org.example.chitchatserver.global.exception.InternalServerError
 import org.example.chitchatserver.thirdparty.webclient.google.dto.OauthTokenResponse
 import org.example.chitchatserver.thirdparty.webclient.google.dto.UserInfoResponse
-import org.example.chitchatserver.thirdparty.webclient.throwError
+import org.example.chitchatserver.thirdparty.webclient.throwOnError
+import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -50,7 +53,7 @@ class GoogleWebClient(
                 .build()
         }
         .retrieve()
-        .throwError(BadRequestException("Code Already Used Or Invalid Code"))
+        .throwOnError(BadRequestException("Code Already Used Or Invalid Code"))
         .bodyToMono(OauthTokenResponse::class.java)
 
     fun getUserInfo(tokens: OauthTokenResponse): Mono<UserInfoResponse> = webClient
@@ -65,7 +68,7 @@ class GoogleWebClient(
                 .build()
         }
         .retrieve()
-        .throwError(UnauthorizedException("Invalid Token"))
+        .throwOnError(UnauthorizedException("Invalid Token"))
         .bodyToMono(UserInfoResponse::class.java)
 
     fun revokeAccessToken(accessToken: String): Mono<Void> = webClient
@@ -79,6 +82,16 @@ class GoogleWebClient(
                 .build()
         }
         .retrieve()
-        .throwError(BadRequestException("Invalid Token"))
+        .throwOnError(BadRequestException("Invalid Token"))
         .bodyToMono(Void::class.java)
 }
+
+fun WebClient.ResponseSpec.throwOnError(vararg exception: CustomException) =
+    this.onStatus(HttpStatusCode::is4xxClientError) { response ->
+        exception.forEach {
+            if (response.statusCode().value() == it.status) {
+                return@onStatus Mono.error<CustomException>(it)
+            }
+        }
+        return@onStatus Mono.error(InternalServerError)
+    }

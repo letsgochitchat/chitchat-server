@@ -36,13 +36,3 @@ class WebClientConfig {
         return webClient
     }
 }
-
-fun WebClient.ResponseSpec.throwError(vararg exception: CustomException) =
-    this.onStatus(HttpStatusCode::is4xxClientError) { response ->
-        exception.forEach {
-            if (response.statusCode().value() == it.status) {
-                return@onStatus Mono.error<CustomException>(it)
-            }
-        }
-        return@onStatus Mono.error(InternalServerError)
-    }
