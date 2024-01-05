@@ -3,10 +3,14 @@ package org.example.chitchatserver.thirdparty.webclient
 import io.netty.channel.ChannelOption
 import io.netty.handler.timeout.ReadTimeoutHandler
 import io.netty.handler.timeout.WriteTimeoutHandler
+import org.example.chitchatserver.common.exception.CustomException
+import org.example.chitchatserver.global.exception.InternalServerError
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import java.time.Duration
 import java.util.concurrent.TimeUnit
@@ -32,3 +36,13 @@ class WebClientConfig {
         return webClient
     }
 }
+
+fun WebClient.ResponseSpec.throwError(vararg exception: CustomException) =
+    this.onStatus(HttpStatusCode::is4xxClientError) { response ->
+        exception.forEach {
+            if (response.statusCode().value() == it.status) {
+                return@onStatus Mono.error<CustomException>(it)
+            }
+        }
+        return@onStatus Mono.error(InternalServerError)
+    }

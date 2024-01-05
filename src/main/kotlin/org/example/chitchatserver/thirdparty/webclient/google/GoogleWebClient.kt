@@ -1,7 +1,9 @@
 package org.example.chitchatserver.thirdparty.webclient.google
 
+import org.example.chitchatserver.common.exception.BadRequestException
 import org.example.chitchatserver.thirdparty.webclient.google.dto.OauthTokenResponse
 import org.example.chitchatserver.thirdparty.webclient.google.dto.UserInfoResponse
+import org.example.chitchatserver.thirdparty.webclient.throwError
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -45,6 +47,7 @@ class GoogleWebClient(
                 .build()
         }
         .retrieve()
+        .throwError(BadRequestException("Code Already Used Or Invalid Code"))
         .bodyToMono(OauthTokenResponse::class.java)
 
     fun getUserInfo(tokens: OauthTokenResponse): Mono<UserInfoResponse> = webClient
@@ -59,6 +62,7 @@ class GoogleWebClient(
                 .build()
         }
         .retrieve()
+        .throwError(BadRequestException("Code Already Used Or Invalid Code"))
         .bodyToMono(UserInfoResponse::class.java)
 
     fun revokeAccessToken(accessToken: String): Mono<Void> = webClient
@@ -72,5 +76,6 @@ class GoogleWebClient(
                 .build()
         }
         .retrieve()
+        .throwError(BadRequestException("Invalid Token"))
         .bodyToMono(Void::class.java)
 }
