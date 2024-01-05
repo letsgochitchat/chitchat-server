@@ -15,6 +15,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.codec.ServerCodecConfigurer
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.support.WebExchangeBindException
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.server.RequestPredicates
 import org.springframework.web.reactive.function.server.RouterFunction
 import org.springframework.web.reactive.function.server.RouterFunctions
@@ -51,6 +52,7 @@ class GlobalExceptionHandler(
     private fun handleError(request: ServerRequest): Mono<ServerResponse> =
         when (val exception = getError(request)) {
             is CustomException -> exception.toErrorResponse()
+            is WebClientResponseException -> exception.toErrorResponse()
             is WebExchangeBindException -> exception.toFieldErrorResponse()
             is ServerWebInputException -> BadRequestException(exception.message).toErrorResponse()
             is ResponseStatusException -> BadRequestException("Handler Not Found: ${request.method()} ${request.path()}").toErrorResponse()
@@ -85,5 +87,14 @@ fun CustomException.toErrorResponse() = ServerResponse
         ErrorResponse(
             status = this.status,
             message = this.message
+        )
+    )
+
+fun WebClientResponseException.toErrorResponse() = ServerResponse
+    .status(this.statusCode)
+    .bodyValue(
+        ErrorResponse(
+            status = this.statusCode.value(),
+            message = this.statusText
         )
     )
