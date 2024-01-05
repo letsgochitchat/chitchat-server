@@ -9,4 +9,5 @@ data class TokenResponse(
     val refreshToken: String,
     val refreshExp: LocalDateTime,
     val authority: Authority,
+    val isNew: Boolean,
 )

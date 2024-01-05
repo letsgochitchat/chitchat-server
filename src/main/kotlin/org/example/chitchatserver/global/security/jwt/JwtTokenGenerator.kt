@@ -17,7 +17,7 @@ class JwtTokenGenerator(
     private val refreshTokenRepository: RefreshTokenRepository,
 ) {
 
-    fun generateTokens(id: UUID, authority: Authority): Mono<TokenResponse> = Mono.zip(
+    fun generateTokens(id: UUID, authority: Authority, isNew: Boolean): Mono<TokenResponse> = Mono.zip(
         generateAccessToken(id, authority),
         generateRefreshToken(id, authority),
     ).map {
@@ -27,6 +27,7 @@ class JwtTokenGenerator(
             refreshToken = it.t2,
             refreshExp = LocalDateTime.now().plusSeconds(jwtProperties.refreshExp.toLong()),
             authority = authority,
+            isNew,
         )
     }
 
