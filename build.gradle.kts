@@ -20,22 +20,24 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
+
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("io.jsonwebtoken:jjwt:0.12.3")
+
     implementation("org.postgresql:r2dbc-postgresql:1.0.3.RELEASE")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc:3.2.0")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive:3.2.0")
-    implementation ("org.springframework.boot:spring-boot-starter-validation")
-    implementation("mysql:mysql-connector-java:8.0.28")
-    implementation("com.querydsl:querydsl-jpa:5.0.0")
-    implementation("com.querydsl:querydsl-apt:5.0.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive:3.2.0")
+
+
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
