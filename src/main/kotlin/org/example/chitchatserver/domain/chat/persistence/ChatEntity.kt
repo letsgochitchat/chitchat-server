@@ -20,6 +20,8 @@ class ChatEntity(
 
     val profileImageUrl: String,
 
+    val userId: UUID,
+
     val type: ChatType,
 
     @CreatedDate
