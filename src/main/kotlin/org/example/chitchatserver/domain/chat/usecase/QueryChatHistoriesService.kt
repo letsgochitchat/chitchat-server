@@ -20,7 +20,7 @@ class QueryChatHistoriesService(
 
     fun execute(roomId: UUID, page: Int): Mono<QueryChatHistoriesResponse> = roomRepository
         .findById(roomId)
-        .switchIfEmpty(Mono.error(NotFoundException("NotFound")))
+        .switchIfEmpty(Mono.error(NotFoundException("Room Not Found")))
         .flatMap { room ->
             val name = room.topic
             userFacade.getCurrentUserId()
