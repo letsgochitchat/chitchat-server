@@ -27,7 +27,7 @@ class JwtFilter(
     private fun extractTokenFromHeader(request: ServerHttpRequest): String? =
         request.headers.getFirst(jwtProperties.header)?.also {
             if (it.startsWith(jwtProperties.prefix)) {
-                return it.split(' ')[1]
+                return it.substring(jwtProperties.prefix.length)
             }
         }
 }

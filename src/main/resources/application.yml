@@ -24,8 +24,7 @@ spring:
       database: ${MONGODB_DB_NAME:chitchat}
 
 jwt:
-  header: ${JWT_HEADER:Authorization}
-  prefix: ${JWT_PREFIX:Bearer }
+  prefix: ${TOKEN_PREFIX:Bearer }
   access-exp: ${ACCESS_TOKEN_EXP}
   refresh-exp: ${REFRESH_TOKEN_EXP}
   secret: ${TOKEN_SECRET}
