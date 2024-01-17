@@ -1,5 +1,6 @@
 package org.example.chitchatserver.domain.chat.persistence
 
+import org.example.chitchatserver.common.entity.BaseUUIDEntity
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -9,8 +10,8 @@ import java.util.UUID
 @Document("chat")
 class ChatEntity(
 
-    @Id
-    val id: UUID,
+    @get:JvmName("getIdentifier")
+    override var id: UUID,
 
     val roomId: UUID,
 
@@ -26,7 +27,7 @@ class ChatEntity(
 
     @CreatedDate
     val sendAt: LocalDateTime,
-)
+) : BaseUUIDEntity()
 
 enum class ChatType {
     MESSAGE, IMAGE, CONNECTION
