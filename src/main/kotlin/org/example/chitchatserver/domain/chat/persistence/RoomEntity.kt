@@ -10,4 +10,6 @@ class RoomEntity(
     override var id: UUID = UUID(0, 0),
 
     val topic: String,
+
+    val connectionCount: Int
 ) : BaseUUIDEntity(id)
