@@ -3,9 +3,9 @@ package org.example.chitchatserver
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
-import org.springframework.data.mongodb.config.EnableMongoAuditing
+import org.springframework.data.mongodb.config.EnableReactiveMongoAuditing
 
-@EnableMongoAuditing
+@EnableReactiveMongoAuditing
 @ConfigurationPropertiesScan
 @SpringBootApplication
 class ChitchatServerApplication
