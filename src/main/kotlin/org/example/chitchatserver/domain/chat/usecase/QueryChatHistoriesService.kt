@@ -9,6 +9,7 @@ import org.example.chitchatserver.domain.user.facade.UserFacade
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.util.function.Tuples
 import java.util.UUID
 
 @Service
@@ -21,23 +22,22 @@ class QueryChatHistoriesService(
     fun execute(roomId: UUID, page: Int): Mono<QueryChatHistoriesResponse> = roomRepository
         .findById(roomId)
         .switchIfEmpty(Mono.error(NotFoundException("Room Not Found")))
-        .flatMap { room ->
-            val name = room.topic
-            userFacade.getCurrentUserId()
-                .flatMapMany { currentUserId ->
-                    chatRepository.findAllByRoomIdOrderBySendAtDesc(room.id, PageRequest.of(page, 50))
-                        .map { chat ->
-                            ChatHistoryResponse(
-                                chat.nickname,
-                                chat.profileImageUrl,
-                                chat.content,
-                                chat.userId == currentUserId,
-                                chat.type,
-                                chat.sendAt,
-                            )
-                        }
+        .zipWith(userFacade.getCurrentUserId())
+        .flatMap {
+            val room = it.t1
+            val currentUserId = it.t2
+            chatRepository.findAllByRoomIdOrderBySendAtDesc(room.id, PageRequest.of(page, 50))
+                .map { chat ->
+                    ChatHistoryResponse(
+                        chat.nickname,
+                        chat.profileImageUrl,
+                        chat.content,
+                        chat.userId == currentUserId,
+                        chat.type,
+                        chat.sendAt,
+                    )
                 }
                 .collectList()
-                .flatMap { chats -> Mono.just(QueryChatHistoriesResponse(name, chats)) }
+                .flatMap { chats -> Mono.just(QueryChatHistoriesResponse(room.topic, chats)) }
         }
 }
