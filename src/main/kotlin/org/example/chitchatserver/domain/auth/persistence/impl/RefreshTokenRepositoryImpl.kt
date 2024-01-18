@@ -1,7 +1,7 @@
-package org.example.chitchatserver.domain.auth.persistence.repository.impl
+package org.example.chitchatserver.domain.auth.persistence.impl
 
 import org.example.chitchatserver.domain.auth.persistence.RefreshTokenEntity
-import org.example.chitchatserver.domain.auth.persistence.repository.RefreshTokenRepository
+import org.example.chitchatserver.domain.auth.persistence.RefreshTokenRepository
 import org.springframework.data.redis.core.ReactiveRedisOperations
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono

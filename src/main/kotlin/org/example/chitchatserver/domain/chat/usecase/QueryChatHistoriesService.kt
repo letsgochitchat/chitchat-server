@@ -1,15 +1,18 @@
 package org.example.chitchatserver.domain.chat.usecase
 
 import org.example.chitchatserver.common.exception.NotFoundException
-import org.example.chitchatserver.domain.chat.persistence.repository.ChatRepository
-import org.example.chitchatserver.domain.chat.persistence.repository.RoomRepository
+import org.example.chitchatserver.domain.chat.persistence.ChatRepository
+import org.example.chitchatserver.domain.chat.persistence.RoomRepository
+import org.example.chitchatserver.domain.chat.persistence.repository.ChatMongoRepository
+import org.example.chitchatserver.domain.chat.persistence.repository.RoomR2DBCRepository
 import org.example.chitchatserver.domain.chat.presentation.dto.response.ChatHistoryResponse
 import org.example.chitchatserver.domain.chat.presentation.dto.response.QueryChatHistoriesResponse
 import org.example.chitchatserver.domain.user.facade.UserFacade
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import reactor.util.function.Tuples
+import reactor.kotlin.core.util.function.component1
+import reactor.kotlin.core.util.function.component2
 import java.util.UUID
 
 @Service
@@ -20,13 +23,11 @@ class QueryChatHistoriesService(
 ) {
 
     fun execute(roomId: UUID, page: Int): Mono<QueryChatHistoriesResponse> = roomRepository
-        .findById(roomId)
+        .queryById(roomId)
         .switchIfEmpty(Mono.error(NotFoundException("Room Not Found")))
         .zipWith(userFacade.getCurrentUserId())
-        .flatMap {
-            val room = it.t1
-            val currentUserId = it.t2
-            chatRepository.findAllByRoomIdOrderBySendAtDesc(room.id, PageRequest.of(page, 50))
+        .flatMap { (room, currentUserId) ->
+            chatRepository.queryByRoomIdOrderBySendAt(room.id, page)
                 .map { chat ->
                     ChatHistoryResponse(
                         chat.nickname,
@@ -34,7 +35,7 @@ class QueryChatHistoriesService(
                         chat.content,
                         chat.userId == currentUserId,
                         chat.type,
-                        chat.sendAt,
+                        chat.sendAt!!,
                     )
                 }
                 .collectList()
