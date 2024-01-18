@@ -2,7 +2,7 @@ package org.example.chitchatserver.global.security.jwt
 
 import io.jsonwebtoken.Jwts
 import org.example.chitchatserver.domain.auth.persistence.RefreshTokenEntity
-import org.example.chitchatserver.domain.auth.persistence.repository.RefreshTokenRepository
+import org.example.chitchatserver.domain.auth.persistence.RefreshTokenRepository
 import org.example.chitchatserver.domain.auth.presentation.dto.response.TokenResponse
 import org.example.chitchatserver.domain.user.persistence.Authority
 import org.springframework.stereotype.Component
