@@ -22,7 +22,8 @@ class ChatRepositoryImpl(
     override fun queryByRoomIdOrderBySendAt(roomId: UUID, page: Int, limit: Int): Flux<ChatEntity> {
         val criteria = Criteria.where(ChatFields.ROOM_ID).`is`(roomId)
         val sort = Sort.by(Sort.Direction.DESC, ChatFields.SEND_AT)
-        val query = Query(criteria)
+        val query = Query()
+            .addCriteria(criteria)
             .skip((page * limit).toLong())
             .limit(limit)
             .with(sort)
