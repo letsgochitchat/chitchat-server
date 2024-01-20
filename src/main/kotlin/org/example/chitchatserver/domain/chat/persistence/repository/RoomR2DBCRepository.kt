@@ -4,5 +4,4 @@ import org.example.chitchatserver.domain.chat.persistence.RoomEntity
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import java.util.UUID
 
-interface RoomRepository : ReactiveCrudRepository<RoomEntity, UUID> {
-}
+interface RoomR2DBCRepository : ReactiveCrudRepository<RoomEntity, UUID>

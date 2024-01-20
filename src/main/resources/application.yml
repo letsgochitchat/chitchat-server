@@ -18,14 +18,14 @@ spring:
     mongodb:
       host: ${DB_HOST:localhost}
       port: ${DB_PORT:27017}
-      username: ${DB_USERNAME:root}
+      username: ${MONGODB_USERNAME:root}
       password: ${DB_PASSWORD:1234}
       authentication-database: admin
       database: ${MONGODB_DB_NAME:chitchat}
 
 jwt:
-  header: Authorization
-  prefix: Bearer
+  header: ${JWT_HEADER:Authorization}
+  prefix: ${JWT_PREFIX:Bearer }
   access-exp: ${ACCESS_TOKEN_EXP}
   refresh-exp: ${REFRESH_TOKEN_EXP}
   secret: ${TOKEN_SECRET}

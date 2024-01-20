@@ -24,8 +24,7 @@ class UserEntity(
     @Value("false")
     @field:Transient
     val isNewUser: Boolean = false,
-) : BaseUUIDEntity(id) {
-}
+) : BaseUUIDEntity(id)
 
 enum class Authority {
     USER,
