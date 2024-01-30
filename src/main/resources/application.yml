@@ -23,11 +23,15 @@ spring:
       authentication-database: admin
       database: ${MONGODB_DB_NAME:chitchat}
 
+  rabbitmq:
+    port: 5672
+
 jwt:
   prefix: ${TOKEN_PREFIX:Bearer }
-  access-exp: ${ACCESS_TOKEN_EXP}
-  refresh-exp: ${REFRESH_TOKEN_EXP}
+  access-exp: ${ACCESS_TOKEN_EXP:3600}
+  refresh-exp: ${REFRESH_TOKEN_EXP:3600}
   secret: ${TOKEN_SECRET}
+  header: ${TOKEN_HEADER:Authorization}
 
 oauth:
   google:
