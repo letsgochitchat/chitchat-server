@@ -11,5 +11,16 @@ class RoomEntity(
 
     val topic: String,
 
-    val connectionCount: Int
-) : BaseUUIDEntity(id)
+    var connectionCount: Int
+) : BaseUUIDEntity(id) {
+
+    fun increaseConnectionCount(): RoomEntity {
+        this.connectionCount += 1
+        return this
+    }
+
+    fun decreaseConnectionCount(): RoomEntity {
+        this.connectionCount -= 1
+        return this
+    }
+}

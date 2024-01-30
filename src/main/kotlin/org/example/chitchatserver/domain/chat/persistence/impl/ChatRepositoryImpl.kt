@@ -3,6 +3,7 @@ package org.example.chitchatserver.domain.chat.persistence.impl
 import org.example.chitchatserver.domain.chat.persistence.ChatEntity
 import org.example.chitchatserver.domain.chat.persistence.ChatFields
 import org.example.chitchatserver.domain.chat.persistence.ChatRepository
+import org.example.chitchatserver.domain.chat.persistence.RoomEntity
 import org.example.chitchatserver.domain.chat.persistence.repository.ChatMongoRepository
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.UUID
 
 @Repository
@@ -30,4 +32,7 @@ class ChatRepositoryImpl(
 
         return mongoTemplate.find(query)
     }
+
+    override fun save(chat: ChatEntity) =
+        chatMongoRepository.save(chat)
 }

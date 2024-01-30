@@ -5,4 +5,8 @@ import java.util.UUID
 
 interface RoomRepository {
     fun queryById(id: UUID): Mono<RoomEntity>
+
+    fun queryMinConnectionCountRoom(): Mono<RoomEntity>
+
+    fun save(room: RoomEntity): Mono<RoomEntity>
 }
