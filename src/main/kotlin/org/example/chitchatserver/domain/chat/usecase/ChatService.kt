@@ -1,7 +1,6 @@
 package org.example.chitchatserver.domain.chat.usecase
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.example.chitchatserver.common.exception.BadRequestException
 import org.example.chitchatserver.domain.chat.persistence.ChatEntity
 import org.example.chitchatserver.domain.chat.persistence.ChatRepository
 import org.example.chitchatserver.domain.chat.persistence.ChatType
@@ -47,8 +46,8 @@ class ChatService(
 
     private fun receiveMessage(session: WebSocketSession, roomId: UUID, currentUserId: UUID): Mono<Void> =
         session.receive()
-            .flatMap {
-                val message = it.toMessage(currentUserId)
+            .flatMap { it.toMessage(currentUserId) }
+            .flatMap { message ->
                 val publishOp = redisOperations.convertAndSend(roomId.toString(), message.toJSON())
                 val saveOp = chatRepository.save(message.toChatEntity(roomId))
                 publishOp.then(saveOp)
@@ -73,11 +72,8 @@ class ChatService(
         return sendConnectionMessage.thenMany(session.send(sendChannelMessage)).then()
     }
 
-    fun WebSocketMessage.toMessage(currentUserId: UUID): Message = try {
-        objectMapper.readValue(payloadAsText, Message::class.java).apply { this.userId = currentUserId }
-    } catch (e: Exception) {
-        throw BadRequestException("Invalid Message Format")
-    }
+    fun WebSocketMessage.toMessage(currentUserId: UUID): Mono<Message> =
+        Mono.just(objectMapper.readValue(payloadAsText, Message::class.java).apply { this.userId = currentUserId })
 
     fun Message.toJSON(): String =
         objectMapper.writeValueAsString(this)
