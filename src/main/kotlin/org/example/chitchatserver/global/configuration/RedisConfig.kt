@@ -21,9 +21,9 @@ class RedisConfig {
         val stringSerializer = StringRedisSerializer()
         val serializationContext = RedisSerializationContext.newSerializationContext<String, Any>()
             .key(stringSerializer)
-            .value(GenericJackson2JsonRedisSerializer(objectMapper))
+            .value(GenericJackson2JsonRedisSerializer())
             .hashKey(stringSerializer)
-            .hashValue(stringSerializer)
+            .hashValue(GenericJackson2JsonRedisSerializer())
             .build()
 
         return ReactiveRedisTemplate(factory, serializationContext)

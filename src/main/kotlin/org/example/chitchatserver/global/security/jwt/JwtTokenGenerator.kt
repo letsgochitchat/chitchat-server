@@ -32,7 +32,7 @@ class JwtTokenGenerator(
     }
 
     private fun generateRefreshToken(id: UUID, authority: Authority): Mono<String> =
-        generateToken(id, authority, TokenType.REFRESH, jwtProperties.refreshExp.toInt())
+        generateToken(id, authority, TokenConstraints.REFRESH, jwtProperties.refreshExp.toInt())
             .flatMap {
                 refreshTokenRepository.save(
                     RefreshTokenEntity(
@@ -45,15 +45,17 @@ class JwtTokenGenerator(
             }
 
     private fun generateAccessToken(id: UUID, authority: Authority): Mono<String> =
-        generateToken(id, authority, TokenType.ACCESS, jwtProperties.accessExp.toInt())
+        generateToken(id, authority, TokenConstraints.ACCESS, jwtProperties.accessExp.toInt())
 
-    private fun generateToken(id: UUID, authority: Authority, type: TokenType, exp: Int): Mono<String> = Mono.just(
+    private fun generateToken(id: UUID, authority: Authority, type: String, exp: Int): Mono<String> = Mono.just(
         Jwts.builder()
             .signWith(jwtProperties.secret)
             .subject(id.toString())
             .issuedAt(Date())
             .expiration(Date(System.currentTimeMillis() + (exp * 1000)))
-            .claim("type", type.toString())
+            .header()
+            .type(type)
+            .and()
             .claim("authority", authority)
             .compact()
     )

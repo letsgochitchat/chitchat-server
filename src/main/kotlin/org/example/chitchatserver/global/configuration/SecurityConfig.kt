@@ -25,6 +25,7 @@ class SecurityConfig(
             authorizeExchange {
                 authorize("/auth/oauth/google", permitAll)
                 authorize("/auth/google", permitAll)
+                authorize("/ws/chat", authenticated)
                 authorize("/chat/history/{room-id}", authenticated)
                 authorize(anyExchange, denyAll)
             }

@@ -14,4 +14,10 @@ class RoomRepositoryImpl(
 
     override fun queryById(id: UUID): Mono<RoomEntity> =
         roomR2DBCRepository.findById(id)
+
+    override fun queryMinConnectionCountRoom(): Mono<RoomEntity> =
+        roomR2DBCRepository.findFirstByOrderByConnectionCountAsc()
+
+    override fun save(room: RoomEntity): Mono<RoomEntity> =
+        roomR2DBCRepository.save(room)
 }

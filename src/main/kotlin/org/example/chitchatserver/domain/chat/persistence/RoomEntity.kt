@@ -10,4 +10,17 @@ class RoomEntity(
     override var id: UUID = UUID(0, 0),
 
     val topic: String,
-) : BaseUUIDEntity(id)
+
+    var connectionCount: Int
+) : BaseUUIDEntity(id) {
+
+    fun increaseConnectionCount(): RoomEntity {
+        this.connectionCount += 1
+        return this
+    }
+
+    fun decreaseConnectionCount(): RoomEntity {
+        this.connectionCount -= 1
+        return this
+    }
+}

@@ -16,10 +16,5 @@ class CustomUserDetailService(
     override fun findByUsername(username: String?): Mono<UserDetails> =
         userRepository.findById(UUID.fromString(username))
             .switchIfEmpty(Mono.error(InvalidTokenException))
-            .map {
-                CustomUserDetail(
-                    userId = it.id,
-                    authority = it.authority
-                )
-            }
+            .map { CustomUserDetail(it) }
 }

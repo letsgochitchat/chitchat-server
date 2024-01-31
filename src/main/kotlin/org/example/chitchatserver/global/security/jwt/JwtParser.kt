@@ -25,7 +25,7 @@ class JwtParser(
     fun getAuthentication(token: String): Mono<Authentication> {
         val claims = getClaims(token)
 
-        if (claims.header.type != "access") {
+        if (claims.header.type != TokenConstraints.ACCESS) {
             throw InvalidTokenException
         }
 
