@@ -13,9 +13,9 @@ class WebSocketConfig(
 ) {
     @Bean
     fun handlerMapping(): HandlerMapping {
-        val map = mapOf("/ws/chat" to chatHandler)
+        val handlers = mapOf("/ws/chat" to chatHandler)
 
-        return SimpleUrlHandlerMapping(map, -1)
+        return SimpleUrlHandlerMapping(handlers, -1)
     }
 
     @Bean

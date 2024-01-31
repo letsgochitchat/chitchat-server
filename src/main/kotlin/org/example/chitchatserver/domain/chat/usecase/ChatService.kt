@@ -68,8 +68,9 @@ class ChatService(
             .map { objectMapper.readValue(it.message as String, Message::class.java) }
             .filter { it.userId != user.id }
             .map { session.textMessage(it.toJSON()) }
+            .let { session.send(it) }
 
-        return sendConnectionMessage.thenMany(session.send(sendChannelMessage)).then()
+        return sendConnectionMessage.thenMany(sendChannelMessage).then()
     }
 
     fun WebSocketMessage.toMessage(currentUserId: UUID): Mono<Message> =
