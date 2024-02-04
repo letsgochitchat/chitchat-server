@@ -1,0 +1,6 @@
+config: 
+  name: chitchat
+  service_type: be
+  port: 8080
+  domain:
+    prod: api-chitchat.xquare.app
