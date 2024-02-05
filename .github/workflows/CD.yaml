@@ -33,3 +33,25 @@ jobs:
           environment: prod
           access_key: ${{ secrets.ACCESS_KEY }}
           github_token: ${{ secrets.GHP_TOKEN }}
+          buildargs: |
+            MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+            MYSQL_PORT=${{ secrets.MYSQL_PORT }}
+            MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }}
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            MONGO_HOST=${{ secrets.MONGO_HOST }}
+            MONGO_PORT=${{ secrets.MONGO_PORT }}
+            MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}
+            MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+            MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}
+            TOKEN_PREFIX=${{ secrets.TOKEN_PREFIX }}
+            ACCESS_TOKEN_EXP=${{ secrets.ACCESS_TOKEN_EXP }}
+            REFRESH_TOKEN_EXP=${{ secrets.REFRESH_TOKEN_EXP }}
+            TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}
+            TOKEN_HEADER=${{ secrets.TOKEN_HEADER }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}
