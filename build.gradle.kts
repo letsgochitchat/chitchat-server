@@ -24,7 +24,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("io.jsonwebtoken:jjwt:0.12.3")
 
-    implementation("org.postgresql:r2dbc-postgresql:1.0.3.RELEASE")
+    implementation("io.asyncer:r2dbc-mysql:1.0.6")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc:3.2.0")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive:3.2.0")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive:3.2.0")
