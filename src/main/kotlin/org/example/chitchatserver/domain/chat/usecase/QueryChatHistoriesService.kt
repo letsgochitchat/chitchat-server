@@ -31,7 +31,6 @@ class QueryChatHistoriesService(
                 .map { chat ->
                     ChatHistoryResponse(
                         chat.nickname,
-                        chat.profileImageUrl,
                         chat.content,
                         chat.userId == currentUserId,
                         chat.type,

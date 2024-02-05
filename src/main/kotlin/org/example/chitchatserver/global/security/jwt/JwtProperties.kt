@@ -9,8 +9,8 @@ import javax.crypto.SecretKey
 class JwtProperties @ConstructorBinding constructor(
     val header: String,
     val prefix: String,
-    val accessExp: String,
-    val refreshExp: String,
+    val accessExp: Int,
+    val refreshExp: Int,
     secret: String
 ) {
     val secret: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray())

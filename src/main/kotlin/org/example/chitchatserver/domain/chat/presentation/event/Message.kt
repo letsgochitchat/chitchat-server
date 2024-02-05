@@ -8,8 +8,14 @@ data class Message(
     val type: ChatType,
     val content: String,
     val sendAt: LocalDateTime = LocalDateTime.now(),
-    val roomId: UUID? = null,
-    val nickname: String,
-    val profileImageUrl: String,
+    var roomId: UUID? = null,
+    var nickname: String? = null,
     var userId: UUID? = null
-)
+) {
+    companion object {
+        val ERROR = Message(
+            type = ChatType.ERROR,
+            content = "Invalid Message Format"
+        )
+    }
+}
