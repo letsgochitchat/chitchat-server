@@ -28,29 +28,40 @@ class ChatService(
     private val objectMapper: ObjectMapper
 ) {
 
-    fun execute(session: WebSocketSession): Mono<Void> =
+    fun execute(session: WebSocketSession, nickname: String): Mono<Void> =
         roomRepository.queryMinConnectionCountRoom()
             .zipWith(userFacade.getCurrentUser())
             .flatMap { (room, currentUser) ->
                 val updateRoomOp = roomRepository.save(room.increaseConnectionCount())
                 val chatOperations = Mono.zip(
-                    receiveMessage(session, room.id, currentUser.id),
+                    receiveMessage(session, room.id, currentUser.id, nickname),
                     sendMessage(session, room, currentUser)
                 )
 
                 updateRoomOp.then(chatOperations)
                     .publishOn(Schedulers.boundedElastic())
-                    .doFinally { roomRepository.save(room.decreaseConnectionCount()).subscribe() }
+                    .doFinally {
+                        roomRepository.save(room.decreaseConnectionCount()).subscribe()
+                    }
             }
             .then()
 
-    private fun receiveMessage(session: WebSocketSession, roomId: UUID, currentUserId: UUID): Mono<Void> =
+    private fun receiveMessage(
+        session: WebSocketSession,
+        roomId: UUID,
+        currentUserId: UUID,
+        nickname: String
+    ): Mono<Void> =
         session.receive()
-            .flatMap { it.toMessage(currentUserId) }
+            .flatMap { it.toMessage(currentUserId, roomId, nickname) }
             .flatMap { message ->
-                val publishOp = redisOperations.convertAndSend(roomId.toString(), message.toJSON())
-                val saveOp = chatRepository.save(message.toChatEntity(roomId))
-                publishOp.then(saveOp)
+                if (message.type != ChatType.ERROR) {
+                    val publishOp = redisOperations.convertAndSend(roomId.toString(), message.toJSON())
+                    val saveOp = chatRepository.save(message.toChatEntity(roomId))
+                    publishOp.then(saveOp)
+                } else {
+                    session.send(Mono.just(session.textMessage(message.toJSON())))
+                }
             }
             .then()
 
@@ -58,8 +69,6 @@ class ChatService(
         val connectionMessage = Message(
             type = ChatType.CONNECTION,
             content = room.connectionCount.toString(),
-            nickname = user.email,
-            profileImageUrl = user.profileImageUrl,
             roomId = room.id
         ).toJSON()
 
@@ -73,8 +82,19 @@ class ChatService(
         return sendConnectionMessage.thenMany(sendChannelMessage).then()
     }
 
-    fun WebSocketMessage.toMessage(currentUserId: UUID): Mono<Message> =
-        Mono.just(objectMapper.readValue(payloadAsText, Message::class.java).apply { this.userId = currentUserId })
+    fun WebSocketMessage.toMessage(currentUserId: UUID, roomId: UUID, nickname: String): Mono<Message> =
+        Mono.just(
+            try {
+                objectMapper.readValue(payloadAsText, Message::class.java)
+                    .apply {
+                        this.userId = currentUserId
+                        this.roomId = roomId
+                        this.nickname = nickname
+                    }
+            } catch (e: Exception) {
+                Message.ERROR
+            }
+        )
 
     fun Message.toJSON(): String =
         objectMapper.writeValueAsString(this)
@@ -84,8 +104,7 @@ class ChatService(
             userId = this.userId!!,
             roomId = roomId,
             content = this.content,
-            nickname = this.nickname,
-            profileImageUrl = this.profileImageUrl,
+            nickname = this.nickname!!,
             type = this.type
         )
 }
