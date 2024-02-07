@@ -10,6 +10,7 @@ import io.r2dbc.spi.ConnectionFactoryOptions.PORT
 import io.r2dbc.spi.ConnectionFactoryOptions.SSL
 import io.r2dbc.spi.ConnectionFactoryOptions.USER
 import io.r2dbc.spi.ConnectionFactoryOptions.builder
+import io.r2dbc.spi.Option
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.ConstructorBinding
 import org.springframework.context.annotation.Bean
@@ -20,6 +21,7 @@ import org.springframework.data.convert.WritingConverter
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import java.nio.ByteBuffer
+import java.time.ZoneId
 import java.util.UUID
 
 
@@ -39,17 +41,17 @@ class R2DBCConfig(
             .option(USER, r2DBCProperties.user)
             .option(PASSWORD, r2DBCProperties.password)
             .option(SSL, false)
+            .option(Option.valueOf("serverZoneId"), ZoneId.of("Asia/Seoul"))
             .build()
 
         return ConnectionFactories.get(factoryOptions)
     }
 
-    @Bean
-    override fun getCustomConverters(): MutableList<Any> =
-        mutableListOf(UUIDToByteArrayConverter(), ByteArrayToUUIDConverter())
+    override fun getCustomConverters(): List<Any> =
+        listOf(UUIDToByteArrayConverter(), ByteArrayToUUIDConverter())
 
     @WritingConverter
-    class UUIDToByteArrayConverter : Converter<UUID?, ByteArray?> {
+    class UUIDToByteArrayConverter : Converter<UUID, ByteArray> {
         override fun convert(source: UUID): ByteArray {
             val bb: ByteBuffer = ByteBuffer.wrap(ByteArray(16))
             bb.putLong(source.mostSignificantBits)
@@ -59,9 +61,17 @@ class R2DBCConfig(
     }
 
     @ReadingConverter
-    class ByteArrayToUUIDConverter : Converter<ByteArray?, UUID?> {
-        override fun convert(source: ByteArray): UUID =
-            UUID.nameUUIDFromBytes(source)
+    class ByteArrayToUUIDConverter : Converter<ByteArray, UUID?> {
+        override fun convert(source: ByteArray): UUID? =
+            if (source.size == UUID_BYTE_LENGTH) {
+                ByteBuffer.wrap(source).let {
+                    UUID(it.long, it.long)
+                }
+            } else null
+
+        companion object {
+            private const val UUID_BYTE_LENGTH = 16
+        }
     }
 }
 
