@@ -13,8 +13,6 @@ class ChatEntity(
 
     val nickname: String,
 
-    val profileImageUrl: String,
-
     val userId: UUID,
 
     val type: ChatType,
@@ -24,7 +22,7 @@ class ChatEntity(
 )
 
 enum class ChatType {
-    MESSAGE, IMAGE, CONNECTION
+    MESSAGE, IMAGE, CONNECTION, ERROR, DISCONNECT
 }
 
 object ChatFields {

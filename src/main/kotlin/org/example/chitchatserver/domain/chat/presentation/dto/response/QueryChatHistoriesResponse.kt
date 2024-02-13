@@ -10,7 +10,6 @@ data class QueryChatHistoriesResponse(
 
 data class ChatHistoryResponse(
     val nickname: String,
-    val profileImageUrl: String,
     val content: String,
     val mine: Boolean,
     val type: ChatType,
