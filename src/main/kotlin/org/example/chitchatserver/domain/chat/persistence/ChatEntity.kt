@@ -22,7 +22,7 @@ class ChatEntity(
 )
 
 enum class ChatType {
-    MESSAGE, IMAGE, CONNECTION, ERROR, DISCONNECT
+    MESSAGE, IMAGE, CONNECTION, ERROR, DISCONNECT, TIMEOUT
 }
 
 object ChatFields {

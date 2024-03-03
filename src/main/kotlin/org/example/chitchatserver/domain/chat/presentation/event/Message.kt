@@ -17,5 +17,12 @@ data class Message(
             type = ChatType.ERROR,
             content = "Invalid Message Format"
         )
+
+        fun createConnectionMessage(connectionCount: Int, roomId: UUID) =
+            Message(
+                type = ChatType.CONNECTION,
+                content = connectionCount.toString(),
+                roomId = roomId
+            )
     }
 }

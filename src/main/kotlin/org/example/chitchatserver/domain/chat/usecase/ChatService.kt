@@ -1,8 +1,6 @@
 package org.example.chitchatserver.domain.chat.usecase
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.example.chitchatserver.domain.chat.persistence.ChatEntity
-import org.example.chitchatserver.domain.chat.persistence.ChatRepository
 import org.example.chitchatserver.domain.chat.persistence.ChatType
 import org.example.chitchatserver.domain.chat.persistence.RoomEntity
 import org.example.chitchatserver.domain.chat.persistence.RoomRepository
@@ -23,7 +21,6 @@ import java.util.UUID
 class ChatService(
     private val roomRepository: RoomRepository,
     private val redisOperations: ReactiveRedisOperations<String, Any>,
-    private val chatRepository: ChatRepository,
     private val userFacade: UserFacade,
     private val objectMapper: ObjectMapper
 ) {
@@ -36,13 +33,10 @@ class ChatService(
                 val chatOperations = Mono.zip(
                     receiveMessage(session, room.id, currentUser.id, nickname),
                     sendMessage(session, room, currentUser)
-                )
+                ).publishOn(Schedulers.boundedElastic())
+                    .doFinally { roomRepository.save(room.decreaseConnectionCount()).subscribe() }
 
                 updateRoomOp.then(chatOperations)
-                    .publishOn(Schedulers.boundedElastic())
-                    .doFinally {
-                        roomRepository.save(room.decreaseConnectionCount()).subscribe()
-                    }
             }
             .then()
 
@@ -54,57 +48,43 @@ class ChatService(
     ): Mono<Void> =
         session.receive()
             .flatMap { it.toMessage(currentUserId, roomId, nickname) }
-            .flatMap { message ->
-                if (message.type != ChatType.ERROR) {
-                    val publishOp = redisOperations.convertAndSend(roomId.toString(), message.toJSON())
-                    val saveOp = chatRepository.save(message.toChatEntity(roomId))
-                    publishOp.then(saveOp)
-                } else {
-                    session.send(Mono.just(session.textMessage(message.toJSON())))
-                }
-            }
+            .defaultIfEmpty(Message.ERROR)
+            .filter { it.type != ChatType.ERROR }
+            .flatMap { redisOperations.convertAndSend(roomId.toString(), it.toJSON()) }
             .then()
 
     private fun sendMessage(session: WebSocketSession, room: RoomEntity, user: UserEntity): Mono<Void> {
-        val connectionMessage = Message(
-            type = ChatType.CONNECTION,
-            content = room.connectionCount.toString(),
+        val connectionMessage = Message.createConnectionMessage(
+            connectionCount = room.connectionCount,
             roomId = room.id
-        ).toJSON()
+        )
 
-        val sendConnectionMessage = session.send(Mono.just(session.textMessage(connectionMessage)))
+        val sendConnectionMessage = session.send(connectionMessage)
         val sendChannelMessage = redisOperations.listenToChannel(room.id.toString())
             .map { objectMapper.readValue(it.message as String, Message::class.java) }
             .filter { it.userId != user.id }
-            .map { session.textMessage(it.toJSON()) }
-            .let { session.send(it) }
+            .flatMap { session.send(it) }
 
         return sendConnectionMessage.thenMany(sendChannelMessage).then()
     }
 
     fun WebSocketMessage.toMessage(currentUserId: UUID, roomId: UUID, nickname: String): Mono<Message> =
-        Mono.just(
-            try {
+        try {
+            Mono.just(
                 objectMapper.readValue(payloadAsText, Message::class.java)
                     .apply {
                         this.userId = currentUserId
                         this.roomId = roomId
                         this.nickname = nickname
                     }
-            } catch (e: Exception) {
-                Message.ERROR
-            }
-        )
+            )
+        } catch (e: Exception) {
+            Mono.empty()
+        }
+
+    fun WebSocketSession.send(message: Message) =
+        send(Mono.just(textMessage(objectMapper.writeValueAsString(message))))
 
     fun Message.toJSON(): String =
         objectMapper.writeValueAsString(this)
-
-    fun Message.toChatEntity(roomId: UUID) =
-        ChatEntity(
-            userId = this.userId!!,
-            roomId = roomId,
-            content = this.content,
-            nickname = this.nickname!!,
-            type = this.type
-        )
 }
